@@ -5,7 +5,7 @@ Software engineering project for the M1 course in ENS Paris-Saclay
 First concetp ideas:
 
 
-Two players with 6 energy points and 30 different cards at the beginning.
+1) Two players with 6 energy points and 30 different cards at the beginning.
 Two types of cards: material and immaterial
 Materials are creatures, objects, equipments, fields
 Immaterials are effects on cards, the field, the players, the energy resources 
@@ -13,7 +13,7 @@ The winning condition is having an energy resource at the end of a turn while yo
 Each turn you can play as many cards as you want from your hand, you can draw one card and you can attack once with each creature.
 
 
-Each players starts with 30 energy points and 30 cards.
+2) Each players starts with 30 energy points and 30 cards.
 Cards are monsters, equipment or effects.
 Invoking a monster takes one energy points, but you only lose it when the monster dies.
 At each turn you can play your cards in hands, make one/all your living monsters do one thing, and take one card in your deck.
