@@ -5,3 +5,16 @@ different types of monsters (like beast, humanoid and spirit), and so equipments
 
 Ideas for the user interface:
 maybe only use keys to play, and not the mouse
+
+
+For the proposal:
+I mostly agree with what is written, but is it a description of the project that we are suppose to send?
+I though it would be more like a list of requirements, like:
+- a card game playable online
+- PvP avaible
+- database with all the cards and the stats of players
+- graphic interface
+- at least two different types of cards, with possible sub-types and a variety of effects and interactions between them
+- possibility for a player to upgrade their deck on certain conditions (number of victories or else)
+And then we can make a brief description of what we've thought of so far, but insisting that it may change.
+Apart from that, I think the way monsters fight themselves (die if ennemy attack points above self defense points) isn't great. It means one monster could be immortal, if it has too much defense points. I think it'd be better to go with a number of life points decreasing at each attack. But it may be too complicated, so why not just say we'll have to come up with coherent rules for the battles between monsters for the moment? Chosing the rules is part of the project, we don't have to decide precisely right now.
