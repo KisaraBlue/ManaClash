@@ -1,4 +1,7 @@
 Ideas for the card game:
+different types of monsters (like beast, humanoid and spirit), and so equipments can differ for each (add variety but not too much complexity I think)
+
 
 
 Ideas for the user interface:
+maybe only use keys to play, and not the mouse
