@@ -1,0 +1,38 @@
+
+{% extends "layout.html" %}
+{% block content %}
+    <h1>Mana Clash: About Us</h1>
+    <article class="media content-section">
+        <div class="media-body">
+            <h2><a class="article-title" href="#">Project Description</a></h2>
+            <small class="text-muted">Software Engineering: 2019</small>
+            <div class="article-metadata">
+                <a class="mr-2" href="#">El Husseini Ali, Huriot Sacha, Lecroel Marie</a>
+            </div>
+            In this game, two players fight each others, drawing cards from a deck. Cards can be monsters, spells, enchantments,...</p>
+            <ul>
+                <li><h6><p class="article-content">⋆⋆ Basic game mechanics</p></h6>
+                    <p class="article-content">There exist a notion of players, monster cards, and decks. The logic for a simple game is developped.</p>
+                </li>
+                <li><h6><p class="article-content">⋆⋆ Game server</p></h6>
+                    <p class="article-content">A server allows to interact with the core.</p>
+                </li>
+                <li><h6><p class="article-content">⋆⋆ Duel arena display</p></h6>
+                    <p class="article-content">A web interface allows one player to interact with the server and play a game, if another player is connected.</p>
+                </li>
+                <li><h6><p class="article-content">⋆⋆⋆ Special cards</p></h6>
+                    <p class="article-content">There exist multiple kind of cards: instance objects, effects, counters. There should exist a reasonble variety of available cards, with non trivial interactions between them. Interactions between cards should be well defined, and never result in a conflict.</p>
+                </li>
+                <li><h6><p class="article-content">⋆ The big league</p></h6>
+                    <p class="article-content">Players must register an account on a server. If the server crashes, data is preserved. They can manage their decks, obtaining new cards when winning games. A global ranking is displayed.</p>
+                </li>
+                <li><h6><p class="article-content">⋆ Animations</p></h6>
+                    <p class="article-content">The arena displays some animations for some actions.</p>
+                </li>
+                <li><h6><p class="article-content">⋆ AI</p></h6>
+                    <p class="article-content">Two AIs must be implemented. One perfectly random, and one which loses to the random one with negligible probability.</p>
+                </li>
+            </ul>
+        </div>
+    </article>
+{% endblock content %}
