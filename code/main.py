@@ -51,6 +51,25 @@ equipment_archetype = db.Table('equipment-archetype-association', db.metadata,
                                          db.ForeignKey('equipment.id'))
                                )
 
+monster_effect_type = db.Table('monster_effect-type-association', db.metadata,
+                               db.Column('type_id',
+                                         db.Integer,
+                                         db.ForeignKey('type.id')),
+                               db.Column('monster_effect_id',
+                                         db.Integer,
+                                         db.ForeignKey('monster_effect.id'))
+                               )
+
+monster_effect_archetype = db.Table('monster_effect-archetype_association',
+                                    db.metadata,
+                                    db.Column('archetype_id',
+                                              db.Integer,
+                                              db.ForeignKey('archetype.id')),
+                                    db.Column('monster_effect_id',
+                                              db.Integer,
+                                              db.ForeignKey('monster_effect.id'))
+                                    )
+
 
 class Monster(db.Model):
     __tablename__ = "monster"
@@ -95,6 +114,10 @@ class Type(db.Model):
                                 secondary=equipment_type,
                                 back_populates="types",
                                 lazy=True)
+    monster_effects = db.relationship("MonsterEffect",
+                                      secondary=monster_effect_type,
+                                      back_populates="types",
+                                      lazy=True)
 
     def __init__(self, name):
         self.name = name
@@ -117,6 +140,10 @@ class Archetype(db.Model):
                                 secondary=equipment_archetype,
                                 back_populates="archetypes",
                                 lazy=True)
+    monster_effects = db.relationship("MonsterEffect",
+                                      secondary=monster_effect_archetype,
+                                      back_populates="archetypes",
+                                      lazy=True)
 
     def __init__(self, name):
         self.name = name
@@ -156,6 +183,37 @@ class Equipment(db.Model):
                 f"Defense: '{self.defense_points}')")
 
 
+class MonsterEffect(db.Model):
+    __tablename__ = "monster_effect"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(25), unique=False, nullable=False)
+
+    #   SQLAlchemy supports JSON as a data type in a column
+    #   However: adding using our current admin panel would be annoying,
+    #   because users would have to write in JSON format.
+    #   We need to modify the Update operator for this specific class
+    #   if we want probabilistic modification of monster attributes.
+    attack = db.Column(db.Integer, unique=False, nullable=False)
+    defense = db.Column(db.Integer, unique=False, nullable=False)
+
+    types = db.relationship("Type",
+                            secondary=monster_effect_type,
+                            back_populates="monster_effects",
+                            lazy=True)
+    archetypes = db.relationship("Archetype",
+                                 secondary=monster_effect_archetype,
+                                 back_populates="monster_effects",
+                                 lazy=True)
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return (f"Equipment('{self.name}'), Attack: {self.attack_points}, "
+                f"Defense: '{self.defense_points}')")
+
+
 # set optional bootswatch theme
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 
@@ -165,6 +223,7 @@ admin.add_view(ModelView(Monster, db.session))
 admin.add_view(ModelView(Type, db.session))
 admin.add_view(ModelView(Archetype, db.session))
 admin.add_view(ModelView(Equipment, db.session))
+admin.add_view(ModelView(MonsterEffect, db.session))
 
 
 @app.route("/")
