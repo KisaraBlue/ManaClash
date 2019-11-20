@@ -16,13 +16,6 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 
 
-"""
-    monster_type is an association table between the tables Monster and Type.
-    The basic logic is:
-        1.  Create a Monster
-        2.  Create a Type
-        3.  Add to monster_type to signify a given monster having any type.
-"""
 monster_type = db.Table('type-association', db.metadata,
                         db.Column('type_id',
                                   db.Integer,
@@ -40,6 +33,23 @@ monster_archetype = db.Table('archetype-association', db.metadata,
                                        db.Integer,
                                        db.ForeignKey('monster.id'))
                              )
+
+equipment_type = db.Table('equipment-type-association', db.metadata,
+                          db.Column('type_id',
+                                    db.Integer,
+                                    db.ForeignKey('type.id')),
+                          db.Column('equipment_id',
+                                    db.Integer,
+                                    db.ForeignKey('equipment.id'))
+                          )
+equipment_archetype = db.Table('equipment-archetype-association', db.metadata,
+                               db.Column('archetype_id',
+                                         db.Integer,
+                                         db.ForeignKey('archetype.id')),
+                               db.Column('equipment_id',
+                                         db.Integer,
+                                         db.ForeignKey('equipment.id'))
+                               )
 
 
 class Monster(db.Model):
@@ -81,6 +91,10 @@ class Type(db.Model):
                                secondary=monster_type,
                                back_populates="types",
                                lazy=True)
+    equipment = db.relationship("Equipment",
+                                secondary=equipment_type,
+                                back_populates="types",
+                                lazy=True)
 
     def __init__(self, name):
         self.name = name
@@ -99,12 +113,47 @@ class Archetype(db.Model):
                                secondary=monster_archetype,
                                back_populates="archetypes",
                                lazy=True)
+    equipment = db.relationship("Equipment",
+                                secondary=equipment_archetype,
+                                back_populates="archetypes",
+                                lazy=True)
 
     def __init__(self, name):
         self.name = name
 
     def __repr__(self):
         return f"Archetype('{self.name}')"
+
+
+class Equipment(db.Model):
+    __tablename__ = "equipment"
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(25), unique=False, nullable=False)
+
+    #   SQLAlchemy supports JSON as a data type in a column
+    #   However: adding using our current admin panel would be annoying,
+    #   because users would have to write in JSON format.
+    #   We need to modify the Update operator for this specific class
+    #   if we want probabilistic modification of monster attributes.
+    attack = db.Column(db.Integer, unique=False, nullable=False)
+    defense = db.Column(db.Integer, unique=False, nullable=False)
+
+    types = db.relationship("Type",
+                            secondary=equipment_type,
+                            back_populates="equipment",
+                            lazy=True)
+    archetypes = db.relationship("Archetype",
+                                 secondary=equipment_archetype,
+                                 back_populates="equipment",
+                                 lazy=True)
+
+    def __init__(self, name):
+        self.name = name
+
+    def __repr__(self):
+        return (f"Equipment('{self.name}'), Attack: {self.attack_points}, "
+                f"Defense: '{self.defense_points}')")
 
 
 # set optional bootswatch theme
@@ -115,6 +164,7 @@ admin = Admin(app, name='Mana Clash Admin', template_mode='bootstrap3')
 admin.add_view(ModelView(Monster, db.session))
 admin.add_view(ModelView(Type, db.session))
 admin.add_view(ModelView(Archetype, db.session))
+admin.add_view(ModelView(Equipment, db.session))
 
 
 @app.route("/")
