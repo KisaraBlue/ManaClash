@@ -1,0 +1,18 @@
+1.  Player 1 joins game (deck already set).
+2.  Player 2 joins game (deck already set).
+
+3.  Player 1 chooses monster to play.
+4.  Player 1 chooses effect or equipment.
+5.  If Player 2 has active monsters:
+    1.  Player 1 chooses if an attack should be made.
+    2.  Player 2 Active Monster list adjusted accordingly.
+6.  Player 2 chooses monster to play.
+7.  Player 2 chooses effect or equipment.
+8.  If Player 1 has active monsters:
+    1.  Player 2 chooses if an attack should be made.
+    2.  Player 1 Active Monster list adjusted accordingly.
+
+9.  If Player 1 Health = 0 or Player 2 Health = 0:
+    1.  End. Player i Health != 0 wins.
+10. Else:
+    1.  Go to 3.
