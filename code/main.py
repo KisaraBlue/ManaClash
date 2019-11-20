@@ -23,7 +23,7 @@ db = SQLAlchemy(app)
         2.  Create a Type
         3.  Add to monster_type to signify a given monster having any type.
 """
-monster_type = db.Table('association', db.metadata,
+monster_type = db.Table('type-association', db.metadata,
                         db.Column('type_id',
                                   db.Integer,
                                   db.ForeignKey('type.id')),
@@ -31,6 +31,15 @@ monster_type = db.Table('association', db.metadata,
                                   db.Integer,
                                   db.ForeignKey('monster.id'))
                         )
+
+monster_archetype = db.Table('archetype-association', db.metadata,
+                             db.Column('archetype_id',
+                                       db.Integer,
+                                       db.ForeignKey('archetype.id')),
+                             db.Column('monster_id',
+                                       db.Integer,
+                                       db.ForeignKey('monster.id'))
+                             )
 
 
 class Monster(db.Model):
@@ -47,6 +56,10 @@ class Monster(db.Model):
                             secondary=monster_type,
                             back_populates="monsters",
                             lazy=True)
+    archetypes = db.relationship("Archetype",
+                                 secondary=monster_archetype,
+                                 back_populates="monsters",
+                                 lazy=True)
 
     def __init__(self, name, attack_points, defense_points):
         self.name = name
@@ -82,6 +95,11 @@ class Archetype(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(25), unique=False, nullable=False)
 
+    monsters = db.relationship("Monster",
+                               secondary=monster_archetype,
+                               back_populates="archetypes",
+                               lazy=True)
+
     def __init__(self, name):
         self.name = name
 
@@ -92,10 +110,11 @@ class Archetype(db.Model):
 # set optional bootswatch theme
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 
-admin = Admin(app, name='microblog', template_mode='bootstrap3')
+admin = Admin(app, name='Mana Clash Admin', template_mode='bootstrap3')
 # Add administrative views here
 admin.add_view(ModelView(Monster, db.session))
 admin.add_view(ModelView(Type, db.session))
+admin.add_view(ModelView(Archetype, db.session))
 
 
 @app.route("/")
