@@ -19,7 +19,7 @@ db = SQLAlchemy(app)
 #   These two imports *had* to happen after initializing db.
 from manaclash import routes
 from manaclash.models import Monster, Type, Archetype, Equipment, MonsterEffect
-from manaclash.models import User
+from manaclash.models import User, Game
 
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
@@ -36,3 +36,4 @@ admin.add_view(ModelView(Archetype, db.session))
 admin.add_view(ModelView(Equipment, db.session))
 admin.add_view(ModelView(MonsterEffect, db.session))
 admin.add_view(ModelView(User, db.session))
+admin.add_view(ModelView(Game, db.session))

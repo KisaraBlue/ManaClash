@@ -262,3 +262,17 @@ class User(db.Model):
                                 secondary=user_equipment,
                                 back_populates="users",
                                 lazy=True)
+
+
+class Game(db.Model):
+    __tablename__ = "game"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    turn = db.Column(db.Integer, unique=False, nullable=True, default=0)
+
+    player_one_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    player_two_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    player_one = db.relationship("User", foreign_keys=[player_one_id])
+    player_two = db.relationship("User", foreign_keys=[player_two_id])
