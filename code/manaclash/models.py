@@ -81,6 +81,33 @@ user_equipment = db.Table('user_equipment-association', db.metadata,
                                     db.ForeignKey('user.id'))
                           )
 
+board_monster = db.Table('board_monster-association', db.metadata,
+                         db.Column('monster_id',
+                                   db.Integer,
+                                   db.ForeignKey('monster.id')),
+                         db.Column('board_id',
+                                   db.Integer,
+                                   db.ForeignKey('board.id'))
+                         )
+
+board_monster_effect = db.Table('board_monster_effect-association', db.metadata,
+                                db.Column('monster_effect_id',
+                                          db.Integer,
+                                          db.ForeignKey('monster_effect.id')),
+                                db.Column('board_id',
+                                          db.Integer,
+                                          db.ForeignKey('board.id'))
+                                )
+
+board_equipment = db.Table('board_equipment-association', db.metadata,
+                           db.Column('equipment_id',
+                                     db.Integer,
+                                     db.ForeignKey('equipment.id')),
+                           db.Column('board_id',
+                                     db.Integer,
+                                     db.ForeignKey('board.id'))
+                           )
+
 
 class Monster(db.Model):
     __tablename__ = "monster"
@@ -104,6 +131,10 @@ class Monster(db.Model):
                             secondary=user_monster,
                             back_populates="monsters",
                             lazy=True)
+    boards = db.relationship("Board",
+                             secondary=board_monster,
+                             back_populates="monsters",
+                             lazy=True)
 
     def __init__(self, name, attack_points, defense_points):
         self.name = name
@@ -193,6 +224,10 @@ class Equipment(db.Model):
                             secondary=user_equipment,
                             back_populates="equipment",
                             lazy=True)
+    boards = db.relationship("Board",
+                             secondary=board_equipment,
+                             back_populates="equipment",
+                             lazy=True)
 
     def __init__(self, name):
         self.name = name
@@ -228,9 +263,15 @@ class MonsterEffect(db.Model):
                             secondary=user_monster_effect,
                             back_populates="monster_effects",
                             lazy=True)
+    boards = db.relationship("Board",
+                             secondary=board_monster_effect,
+                             back_populates="monster_effects",
+                             lazy=True)
 
-    def __init__(self, name):
+    def __init__(self, name, attack_points, defense_points):
         self.name = name
+        self.attack_points = attack_points
+        self.defense_points = defense_points
 
     def __repr__(self):
         return (f"Equipment('{self.name}'), Attack: {self.attack_points}, "
@@ -262,6 +303,14 @@ class User(db.Model):
                                 secondary=user_equipment,
                                 back_populates="users",
                                 lazy=True)
+    boards = db.relationship("Board")
+
+    def __init__(self, id, name):
+        self.name = name
+        self.id = id
+
+    def __repr__(self):
+        return (f"User('{self.name}'), ID: {self.id}")
 
 
 class Game(db.Model):
@@ -276,3 +325,49 @@ class Game(db.Model):
 
     player_one = db.relationship("User", foreign_keys=[player_one_id])
     player_two = db.relationship("User", foreign_keys=[player_two_id])
+
+    boards = db.relationship("Board")
+
+    def __init__(self, player_one, player_two, turn):
+        self.player_one = player_one
+        self.player_two = player_two
+        self.turn = turn
+
+    def __repr__(self):
+        return (f"Game: Player 1('{self.player_one}') "
+                f"Player 2('{self.player_two}') "
+                f"Turn: '{self.turn}'")
+
+
+class Board(db.Model):
+    __tablename__ = "board"
+
+    id = db.Column(db.Integer, primary_key=True)
+
+    game_id = db.Column(db.Integer, db.ForeignKey('game.id'))
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+
+    health = db.Column(db.Integer, nullable=True, default=10)
+
+    monsters = db.relationship("Monster",
+                               secondary=board_monster,
+                               back_populates="boards",
+                               lazy=True)
+    monster_effects = db.relationship("MonsterEffect",
+                                      secondary=board_monster_effect,
+                                      back_populates="boards",
+                                      lazy=True)
+    equipment = db.relationship("Equipment",
+                                secondary=board_equipment,
+                                back_populates="boards",
+                                lazy=True)
+
+    def __init__(self, game_id, user_id, health):
+        self.game_id = game_id
+        self.user_id = user_id
+        self.health = health
+
+    def __repr__(self):
+        return (f"Board: Player('{self.user_id}') "
+                f"Game('{self.game_id}') "
+                f"Health: '{self.health}'")
