@@ -13,13 +13,18 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 db = SQLAlchemy(app)
 
 
+#   Below import is necessary, even if the linter complains about it.
+#   This is because the linter cannot distinguish between imports in a script
+#   and imports in a package. The order of the imports is also important.
+#   These two imports *had* to happen after initializing db.
 from manaclash import routes
-
+from manaclash.models import Monster, Type, Archetype, Equipment, MonsterEffect
+from manaclash.models import User
 
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
-from manaclash.models import Monster, Type, Archetype, Equipment, MonsterEffect
+
 # set optional bootswatch theme
 app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 
@@ -30,3 +35,4 @@ admin.add_view(ModelView(Type, db.session))
 admin.add_view(ModelView(Archetype, db.session))
 admin.add_view(ModelView(Equipment, db.session))
 admin.add_view(ModelView(MonsterEffect, db.session))
+admin.add_view(ModelView(User, db.session))

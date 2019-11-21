@@ -54,6 +54,33 @@ monster_effect_archetype = db.Table('monster_effect-archetype_association',
                                               db.ForeignKey('monster_effect.id'))
                                     )
 
+user_monster = db.Table('user_monster-association', db.metadata,
+                        db.Column('monster_id',
+                                  db.Integer,
+                                  db.ForeignKey('monster.id')),
+                        db.Column('user_id',
+                                  db.Integer,
+                                  db.ForeignKey('user.id'))
+                        )
+
+user_monster_effect = db.Table('user_monster_effect-association', db.metadata,
+                               db.Column('monster_effect_id',
+                                         db.Integer,
+                                         db.ForeignKey('monster_effect.id')),
+                               db.Column('user_id',
+                                         db.Integer,
+                                         db.ForeignKey('user.id'))
+                               )
+
+user_equipment = db.Table('user_equipment-association', db.metadata,
+                          db.Column('equipment_id',
+                                    db.Integer,
+                                    db.ForeignKey('equipment.id')),
+                          db.Column('user_id',
+                                    db.Integer,
+                                    db.ForeignKey('user.id'))
+                          )
+
 
 class Monster(db.Model):
     __tablename__ = "monster"
@@ -73,6 +100,10 @@ class Monster(db.Model):
                                  secondary=monster_archetype,
                                  back_populates="monsters",
                                  lazy=True)
+    users = db.relationship("User",
+                            secondary=user_monster,
+                            back_populates="monsters",
+                            lazy=True)
 
     def __init__(self, name, attack_points, defense_points):
         self.name = name
@@ -158,6 +189,10 @@ class Equipment(db.Model):
                                  secondary=equipment_archetype,
                                  back_populates="equipment",
                                  lazy=True)
+    users = db.relationship("User",
+                            secondary=user_equipment,
+                            back_populates="equipment",
+                            lazy=True)
 
     def __init__(self, name):
         self.name = name
@@ -189,6 +224,10 @@ class MonsterEffect(db.Model):
                                  secondary=monster_effect_archetype,
                                  back_populates="monster_effects",
                                  lazy=True)
+    users = db.relationship("User",
+                            secondary=user_monster_effect,
+                            back_populates="monster_effects",
+                            lazy=True)
 
     def __init__(self, name):
         self.name = name
@@ -211,5 +250,15 @@ class User(db.Model):
     losses = db.Column(db.Integer, unique=False, nullable=True, default=0)
     ties = db.Column(db.Integer, unique=False, nullable=True, default=0)
 
-    #   Make this a foreign key later
-    deck = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    monsters = db.relationship("Monster",
+                               secondary=user_monster,
+                               back_populates="users",
+                               lazy=True)
+    monster_effects = db.relationship("MonsterEffect",
+                                      secondary=user_monster_effect,
+                                      back_populates="users",
+                                      lazy=True)
+    equipment = db.relationship("Equipment",
+                                secondary=user_equipment,
+                                back_populates="users",
+                                lazy=True)
