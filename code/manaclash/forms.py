@@ -1,15 +1,15 @@
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, BooleanField
 from wtforms.validators import DataRequired, Length, Email, EqualTo
+from wtforms.validators import ValidationError
+
+from manaclash.models import User
 
 
 class RegistrationForm(FlaskForm):
-    first_name = StringField('First Name',
-                             validators=[DataRequired(),
-                                         Length(min=2, max=12)])
-    last_name = StringField('Last Name',
-                            validators=[DataRequired(),
-                                        Length(min=3, max=15)])
+    username = StringField('Username',
+                           validators=[DataRequired(),
+                                       Length(min=2, max=15)])
     email = StringField('Email',
                         validators=[DataRequired(),
                                     Email()])
@@ -19,6 +19,18 @@ class RegistrationForm(FlaskForm):
                                      validators=[DataRequired(),
                                                  EqualTo('password')])
     submit = SubmitField('Submit')
+
+    def validate_username(self, username):
+        user = User.query.filter_by(username=username.data).first()
+
+        if user:
+            raise ValidationError('Username already exists!')
+
+    def validate_email(self, email):
+        user = User.query.filter_by(email=email.data).first()
+
+        if user:
+            raise ValidationError('Account with email already exists!')
 
 
 class LoginForm(FlaskForm):

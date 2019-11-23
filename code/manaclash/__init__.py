@@ -4,6 +4,8 @@ from flask_sqlalchemy import SQLAlchemy
 #   Note: make sure you use flake8 or pylint-flask
 #         because normal pylint will complain about
 #         flask works
+from flask_bcrypt import Bcrypt
+from flask_login import LoginManager
 
 
 app = Flask(__name__)
@@ -11,6 +13,11 @@ app.config['SECRET_KEY'] = '60808326457a6384f78964761aaa161c'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
 
 db = SQLAlchemy(app)
+bcrypt = Bcrypt(app)
+
+login_manager = LoginManager(app)
+login_manager.login_view = 'login'
+login_manager.login_message_category = 'info'
 
 
 #   Below import is necessary, even if the linter complains about it.
