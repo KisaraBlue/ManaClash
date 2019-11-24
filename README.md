@@ -9,6 +9,7 @@ Requirements:
 How to run the game:
 - Admin panel can be accessed by running the run.py file and then going to 127.0.0.1:5000/admin in your browser. You can use this to add or remove anything in the database (say you want to add cards).
 - Interface: we could not manage to finish the UI in time. As such, the controller.py file will run a CLI version of the game.
+- An html demo of the UI is there to show the final display of one game session
 
 Note on Continuous Integration:
 - We did not manage to write any meaningful tests properly (save for the usual printing while testing), and because we ran out of time, we did not set up proper tests or CI.
