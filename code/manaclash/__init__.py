@@ -26,8 +26,7 @@ login_manager.login_message_category = 'info'
 #   These two imports *had* to happen after initializing db.
 from manaclash import routes
 from manaclash.models import Monster, Type, Archetype, Equipment, MonsterEffect
-from manaclash.models import User, Game
-
+from manaclash.models import User, Game, Board
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
@@ -44,3 +43,4 @@ admin.add_view(ModelView(Equipment, db.session))
 admin.add_view(ModelView(MonsterEffect, db.session))
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Game, db.session))
+admin.add_view(ModelView(Board, db.session))
