@@ -25,8 +25,8 @@ login_manager.login_message_category = 'info'
 #   and imports in a package. The order of the imports is also important.
 #   These two imports *had* to happen after initializing db.
 from manaclash import routes
-from manaclash.models import Monster, Type, Archetype, Equipment, MonsterEffect
-from manaclash.models import User, Game, Board
+from manaclash.models import Card, Type, Archetype, Category
+from manaclash.models import User, Game, CardsInGame
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
@@ -36,11 +36,10 @@ app.config['FLASK_ADMIN_SWATCH'] = 'flatly'
 
 admin = Admin(app, name='Mana Clash Admin', template_mode='bootstrap3')
 # Add administrative views here
-admin.add_view(ModelView(Monster, db.session))
+admin.add_view(ModelView(Card, db.session))
 admin.add_view(ModelView(Type, db.session))
 admin.add_view(ModelView(Archetype, db.session))
-admin.add_view(ModelView(Equipment, db.session))
-admin.add_view(ModelView(MonsterEffect, db.session))
+admin.add_view(ModelView(Category, db.session))
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Game, db.session))
-admin.add_view(ModelView(Board, db.session))
+admin.add_view(ModelView(CardsInGame, db.session))
