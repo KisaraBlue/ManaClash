@@ -19,6 +19,24 @@ card_archetype = db.Table('archetype-association', db.metadata,
                                        db.ForeignKey('card.id'))
                              )
 
+card_deck = db.Table('deck-association', db.metadata,
+                             db.Column('deck_id',
+                                       db.Integer,
+                                       db.ForeignKey('deck.id')),
+                             db.Column('card_id',
+                                       db.Integer,
+                                       db.ForeignKey('card.id'))
+                             )
+
+user_deck = db.Table('deck-user-association', db.metadata,
+                             db.Column('deck_id',
+                                       db.Integer,
+                                       db.ForeignKey('deck.id')),
+                             db.Column('user_id',
+                                       db.Integer,
+                                       db.ForeignKey('user.id'))
+                             )
+
 
 class Card(db.Model):
     __tablename__ = "card"
@@ -37,6 +55,10 @@ class Card(db.Model):
                             lazy=True)
     archetypes = db.relationship("Archetype",
                                  secondary=card_archetype,
+                                 back_populates="cards",
+                                 lazy=True)
+    decks = db.relationship("Deck",
+                                 secondary=card_deck,
                                  back_populates="cards",
                                  lazy=True)
     category_id = db.Column(db.Integer,
@@ -127,6 +149,13 @@ class User(db.Model, UserMixin):
     losses = db.Column(db.Integer, unique=False, nullable=True, default=0)
     ties = db.Column(db.Integer, unique=False, nullable=True, default=0)
 
+    decks = db.relationship("Deck",
+                                 secondary=user_deck,
+                                 back_populates="users",
+                                 lazy=True)
+
+    playing = db.Column(db.Integer, nullable=False, default=0)
+
     def __init__(self, username, email, password):
         self.username = username
         self.email = email
@@ -135,6 +164,19 @@ class User(db.Model, UserMixin):
     def __repr__(self):
         return (f"User('{self.username}'), ID: {self.id}")
 
+
+class Deck(db.Model):
+    __tablename__="deck"
+
+    id = db.Column(db.Integer, primary_key=True)
+    users = db.relationship("User",
+                                 secondary=user_deck,
+                                 back_populates="decks",
+                                 lazy=True)
+    cards = db.relationship("Card",
+                                 secondary=card_deck,
+                                 back_populates="decks",
+                                 lazy=True)
 
 class Game(db.Model):
     __tablename__ = "game"
@@ -172,12 +214,12 @@ class CardsInGame(db.Model):
     state = db.Column(db.Integer, unique=False, nullable=True, default=0)
     duration = db.Column(db.Integer, unique=False, nullable=True, default=1000)
 
-    linked_to = db.relationship("CardsInGame",
+    """linked_to = db.relationship("CardsInGame",
                 backref=db.backref('equiped_with', remote_side=[id])
-            )
+            )"""
     linked_to_id = db.Column(db.Integer,
                             db.ForeignKey('cardsingame.id'))
-    linked_to = db.relationship("CardsInGame", foreign_keys=[linked_to_id], lazy=True)
+    linked_to = db.relationship("CardsInGame", foreign_keys=[linked_to_id], backref=db.backref('equiped_with', remote_side=[id]), lazy=True)
 
     card_id = db.Column(db.Integer,
                             db.ForeignKey('card.id'))

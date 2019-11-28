@@ -4,7 +4,7 @@ from manaclash import db
 # db.drop_all()
 # db.create_all()
 
-from manaclash import User, Game, CardsInGame
+from manaclash import User, Game, CardsInGame, Deck
 from manaclash import Card
 from manaclash import Type, Archetype, Category
 #from manaclash.models import board_monster_effect
@@ -62,6 +62,14 @@ class Controller():
 
         #self.board_one = Board(self.game.id, self.game.player_one.id)
         #self.board_two = Board(self.game.id, self.game.player_two.id)
+        """deck_one = db.session.query(Deck).filter(Deck.users.any(id == self.game.player_one.id)).first()
+        for card in deck_one.cards:
+            card_ingame = CardsInGame(card = card.id, game_id = self.game.id, player = self.player_one, state=0, duration = card.duration)
+            db.session.add(card_ingame)
+        deck_two = db.session.query(Deck).filter(self.game.player_two.in_(Deck.users)).first()
+        for card in deck_two.cards:
+            card_ingame = CardsInGame(card = card.id, game_id = self.game.id, player = self.player_two, state=0, duration = card.duration)
+            db.session.add(card_ingame)"""
 
         db.session.add(self.game)
         #db.session.add(self.board_one)
@@ -70,7 +78,9 @@ class Controller():
 
     def activate_card(self, cardingame):
         cardingame.state = 2
-
+        if cardingame.card_id.category == 2:
+            creature_id = int(input("Enter card_id from board: "))
+            cardingame.linked_to = creature_id
 
         #db.session.add(board)
         db.session.commit()
@@ -121,12 +131,17 @@ class Controller():
 
         return (attack_bonus, defense_bonus)
 
-    def evaluate_equipment(self, board, monster):
-        """
-        For now, we will not allow a player to draw any equipment cards, and so
-        this will not be included in the Phase One submission.
-        """
-        pass
+    def evaluate_equipment(self, creature):
+
+        equipments = db.session.query(CardsInGame.id).filter(linked_to = creature.id)
+        attack_bonus = 0
+        defense_bonus =0
+        for equ in equipments:
+            equipment = db.session.query(Card).filter(Card.id == equ).first()
+            attack_bonus += equipment.attack_points
+            defense_bonus += equipment.defense_points
+
+        return attack_bonus, defense_bonus
 
     #def attack(self, boards, attacker, defender):
     def attack(self, attacker, defender):
@@ -148,8 +163,8 @@ class Controller():
         #attacker_eval = self.evaluate_effects(boards[0], attacker)[0]
         #defender_eval = self.evaluate_effects(boards[1], defender)[1]
 
-        attacker_eval = self.evaluate_effects(attacker)[0]
-        defender_eval = self.evaluate_effects(defender)[1]
+        attacker_eval = self.evaluate_effects(attacker)[0] + self.evaluate_equipment(attacker)[0]
+        defender_eval = self.evaluate_effects(defender)[1] + self.evaluate_equipment(defender)[1]
 
         total_attack = attacker.attack_points + attacker_eval
         total_defense = defender.defense_points + defender_eval
@@ -163,6 +178,9 @@ class Controller():
                 self.game.health2 -= 1
             #boards[1].monsters.remove(defender)
             defender.state = 3
+            equipments = db.session.query(CardsInGame).filter(CardsInGame.linked_to == defender.id)
+            for equ in equipments:
+                equ.state = 3
 
             print("Attack succeeded!")
         else:
@@ -204,17 +222,24 @@ class Controller():
             for player in (self.player_one, self.player_two):
                 self.game.turn = self.game.turn + 1
 
+                if player == self.player_one:
+                    i=1
+                else :
+                    i = 2
+
                 print(f"{player.username}'s turn.")
                 
                 self.draw(player)
+                your_hand = db.session.query(CardsInGame).filter(CardsInGame.game_id==self.game.id).filter(CardsInGame.player == i).filter(CardsInGame.state == 1)
                 print("Current hand:")
-                #print(board.hand_monsters, board.hand_monster_effects)
-
-                print("Active monsters:")
-                #print(board.monsters)
-
-                print("Active effects:")
-                #print(board.monster_effects)
+                print(your_hand)
+                
+                your_cards = db.session.query(CardsInGame).filter(CardsInGame.game_id==self.game.id).filter(CardsInGame.player == i).filter(CardsInGame.state == 2)
+                their_cards = db.session.query(CardsInGame).filter(CardsInGame.game_id==self.game.id).filter(CardsInGame.player != i).filter(CardsInGame.state == 2)
+                print("Your board:")
+                print(your_cards)
+                print("The ennemy board:")
+                print(their_cards)
 
                 activate_card = query_yes_no("Do you want to activate a"
                                                 " monster?")
@@ -247,6 +272,12 @@ class Controller():
                     attacker = db.session.query(CardsInGame).filter_by(id=attacker_id).first()
                     defender = db.session.query(CardsInGame).filter_by(id=defender_id).first()
                     self.attack(attacker, defender)
+                
+                active_cards = db.session.query(CardsInGame).filter(CardsInGame.game_id == self.game.id).filter(CardsInGame.State == 2)
+                for card in active_cards:
+                    card.duration -= 1
+                    if card.duration == 0:
+                        card.state = 3
 
             if self.game.health1 <= 0:
                 win_condition = True
