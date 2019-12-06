@@ -1,0 +1,162 @@
+body {
+    font: 8px "Century Gothic", Futura, sans-serif;
+    margin: 16px;
+    background-color: #204060;
+  }
+  
+  ol, ul {
+    padding-left: 30px;
+  }
+  
+  .board-row:after {
+    clear: both;
+    content: "";
+    display: table;
+  }
+
+  .card-row:after {
+    clear: both;
+    content: "";
+    display: table;
+  }
+  
+  .status {
+    margin-bottom: 5px;
+  }
+
+  .arrow_hand {
+    background-color: transparent;
+    float: left;
+    font-size: 8px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 49px;
+    margin-right: 36px;
+    margin-left: 36px;
+    margin-top: 8px;
+    padding: 0;
+    text-align: center;
+    width: 35px;
+  }
+
+  .card {
+    background: rgb(191,191,191);
+    border: 2px solid black;
+    float: left;
+    font-size: 8px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 84px;
+    margin-right: 21px;
+    margin-left: 21px;
+    margin-top: 8px;
+    padding: 0;
+    border-radius: 8px;
+    text-align: center;
+    width: 84px;
+    white-space:pre;
+  }
+
+  .back {
+    background: linear-gradient(to bottom right, black, cyan);
+    border: 2px solid black;
+    float: left;
+    font-size: 8px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 49px;
+    margin-right: 8px;
+    margin-left: 8px;
+    margin-top: 8px;
+    padding: 0;
+    border-radius: 8px;
+    text-align: center;
+    width: 35px;
+  }
+
+  .back_void {
+    background: transparent;
+    border: transparent;
+    float: left;
+    font-size: 8px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 49px;
+    margin-right: 8px;
+    margin-left: 8px;
+    margin-top: 8px;
+    padding: 0;
+    border-radius: 8px;
+    text-align: center;
+    width: 35px;
+  }
+
+  .card_hand {
+    background: rgb(223,223,223);
+    border: 2px solid gray;
+    float: left;
+    font-size: 8px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 49px;
+    margin-right: 12px;
+    margin-right: 12px;
+    margin-top: 8px;
+    padding: 0;
+    border-radius: 8px;
+    text-align: center;
+    width: 35px;
+  }
+
+  .card_hand:hover {
+    transform: scale(3.14) translateX(13px) translateY(-17px);
+    left: 12px;
+    transition: 0.4s ease-out;
+  }
+
+  .card_hand:hover ~ .card_hand {
+    position: relative;
+    left: 81px;
+    transition: 0.4s ease-out;
+  }
+
+  .card_hand:hover ~ .arrow_hand {
+    position: relative;
+    left: 81px;
+    transition: 0.4s ease-out;
+  }
+
+  .card_pile {
+    background: linear-gradient(to bottom right, black, cyan);
+    border: 2px solid black;
+    float: left;
+    font-size: 8px;
+    font-weight: bold;
+    line-height: 34px;
+    height: 84px;
+    margin-right: 21px;
+    margin-left: 21px;
+    margin-top: 8px;
+    padding: 0;
+    border-radius: 8px;
+    text-align: center;
+    width: 84px;
+  }
+  
+  .square:focus {
+    outline: none;
+  }
+  
+  .kbd-navigation .square:focus {
+    background: #111111;
+  }
+  
+  .game {
+    display: flex;
+    flex-direction: row;
+  }
+  
+  .game-info {
+    margin-left: 10px;
+    color: cornsilk;
+  }  
