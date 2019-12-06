@@ -1,0 +1,676 @@
+<!DOCTYPE html>
+<html>
+  <head lang="en">
+    <meta charset="UTF-8">
+    <title>Flask Rezefiodsjct</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <!-- styles -->
+  </head>
+  <body>
+    <link rel="stylesheet" href="index.css">
+    <div class="container">
+        <div id="content"></div>
+    </div>
+    <!-- scripts -->
+    
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/react/15.1.0/react-dom.min.js"></script>
+    <script src="http://cdnjs.cloudflare.com/ajax/libs/react/0.13.3/JSXTransformer.js"></script>
+    <script type="text/jsx">
+
+
+        // functions to create the different buttons, called by the Board component
+
+
+        function Deck(props) {
+            return (
+                <button
+                className="card_pile"
+                onClick={props.onClick}
+                >{'Deck: ' + props.value}
+                </button>
+            )
+        }
+
+        function Back(props) {
+            return (
+                <button
+                className="back"
+                >{null}
+                </button>
+            )
+        }
+
+        function BackVoid(props) {
+            return (
+                <button
+                className="back_void"
+                >{null}
+                </button>
+            )
+        }
+        
+        function Card(props) {
+            const id = props.id;
+            var j = 0;
+            for (i=0;i<5;i++){
+                j++;
+            }
+            return (
+                <button
+                className="card"
+                onClick={props.onClick}
+                >{props.value}<br />
+                {j}
+                </button>
+            )
+        }
+        
+        function Hand(props) {
+            return (
+                <button
+                className="card_hand"
+                onClick={props.onClick}
+                >{props.value}
+                </button>
+            )
+        }
+        
+        function Arrow(props) {
+            return (
+                <button
+                className="arrow_hand"
+                onClick={props.onClick}
+                >{props.value}
+                </button>
+            )
+        }
+
+
+        //component which arranges the buttons in a cohesive interface
+        
+        class Board extends React.Component {
+            renderDeck(nb) {
+                return (
+                <Deck
+                value={nb}
+                onClick={() => this.props.deckClick()}
+                />
+                );
+            }
+
+            renderBack(mode) {
+                if (mode === 'back') {
+                    return (
+                        <Back />
+                    );
+                } else {
+                    return (
+                        <BackVoid />
+                    );
+                }
+                
+            }
+        
+            renderCard(id) {
+                if (id === null) {
+                    return (
+                    <Card
+                    id={id}
+                    value={'Null \a hello'}
+                    onClick={() => this.props.cardClick()}
+                    />);
+                } else {
+                    var dummy = 'Dumdum';
+                    return (
+                    <Card
+                    value={dummy}
+                    onClick={() => this.props.cardClick()}
+                    />);
+                }
+            }
+        
+            renderHand(mode, cat, id) {
+                if (mode === 'null') {
+                    return (
+                        <BackVoid />
+                    );
+                } else {
+                    if (cat === 'M') {
+                        return (
+                        <Hand
+                        value={'Monster'}
+                        onClick={() => this.props.cardClick()}
+                        />
+                        );
+                    } else {
+                        if (cat === 'Q') {
+                            return (
+                            <Hand
+                            value={'Equipment'}
+                            onClick={() => this.props.cardClick()}
+                            />
+                            );
+                        } else {
+                            return (
+                            <Hand
+                            value={'Effect'+cat}
+                            onClick={() => this.props.cardClick()}
+                            />
+                            );
+                        }
+                    }
+                }
+            }
+        
+            renderArrow(mode, char) {
+                if (mode === 'null') {
+                    return (
+                        <BackVoid />
+                    );
+                } else {
+                    return (
+                    <Arrow
+                    value={char}
+                    onClick={() => this.props.cardClick()}
+                    />
+                    );
+                }
+            }
+        
+            render() {
+                const my_board = this.props.my_board;
+                const hs1 = this.props.hs1;
+                const hs2 = this.props.hs2;
+                const page = this.props.hand_page;
+                const new_hs1 = Math.min(6, hs1 - 6 * page);
+                const hand_monster = this.props.hand_monster;
+
+                var my_hand_cat = Array(Math.max(6,hs1)).fill('NA');
+                var my_hand_id = Array(Math.max(6,hs1)).fill(-1);
+
+                var i, len = 0;
+                for (i=0;i<hand_monster.length;i++) {
+                    if (true) {
+                        my_hand_cat[len] = 'M';
+                        my_hand_id[len] = 0;
+                        len++;
+                    }
+                }/*
+                for (i=0;i<this.props.hand_equipment.length;i++) {
+                    if (this.props.hand_equipment[i].board_id === my_board) {
+                        my_hand_cat[len] = 'Q';
+                        my_hand_id[len] = this.props.hand_equipment[i].equipment_id;
+                        len++;
+                    }
+                }
+                for (i=0;i<this.props.hand_effect.length;i++) {
+                    if (this.props.hand_effect[i].board_id === my_board) {
+                        my_hand_cat[len] = 'F';
+                        my_hand_id[len] = this.props.hand_effect[i].effect_id;
+                        len++;
+                    }
+                }*/
+                
+
+                return (
+                <div>
+                    <div className="card-row">
+                        {this.renderBack((hs2>5)?'back':'null')}
+                        {this.renderBack((hs2>3)?'back':'null')}
+                        {this.renderBack((hs2>1)?'back':'null')}
+                        {this.renderBack((hs2>0)?'back':'null')}
+                        {this.renderBack((hs2>2)?'back':'null')}
+                        {this.renderBack((hs2>4)?'back':'null')}
+                    </div>
+                    <div className="card-row">
+                        {this.renderDeck(this.props.grave2)}
+                        {this.renderCard(this.props.field2[0])}
+                        {this.renderCard(this.props.field2[1])}
+                        {this.renderCard(this.props.field2[2])}
+                        {this.renderDeck(this.props.deck2)}
+                    </div>
+                    <div className="card-row">
+                        {this.renderCard(this.props.field2[0])}
+                        {this.renderCard(this.props.field2[1])}
+                        {this.renderCard(this.props.field2[1])}
+                        {this.renderCard(this.props.field2[1])}
+                        {this.renderCard(this.props.field2[1])}
+                    </div>
+                    <div className="card-row">
+                        {this.renderBack('null')}
+                    </div>
+                    <div className="card-row">
+                        {this.renderCard(this.props.field2[0])}
+                        {this.renderCard(this.props.field2[1])}
+                        {this.renderCard(this.props.field2[1])}
+                        {this.renderCard(this.props.field2[1])}
+                        {this.renderCard(this.props.field2[1])}
+                    </div>
+                    <div className="card-row">
+                        {this.renderDeck(this.props.deck1)}
+                        {this.renderCard(this.props.field1[0])}
+                        {this.renderCard(this.props.field1[1])}
+                        {this.renderCard(this.props.field1[2])}
+                        {this.renderDeck(this.props.grave1)}
+                    </div>
+                    <div className="card-row">
+                        {this.renderArrow((hs1>6)?'a':'null', '<-')}
+                        {this.renderHand((new_hs1>5)?'back':'null', my_hand_cat[5], my_hand_id[5])}
+                        {this.renderHand((new_hs1>3)?'back':'null', my_hand_cat[3], my_hand_id[3])}
+                        {this.renderHand((new_hs1>1)?'back':'null', my_hand_cat[1], my_hand_id[1])}
+                        {this.renderHand((new_hs1>0)?'back':'null', my_hand_cat[0], my_hand_id[0])}
+                        {this.renderHand((new_hs1>2)?'back':'null', my_hand_cat[2], my_hand_id[2])}
+                        {this.renderHand((new_hs1>4)?'back':'null', my_hand_cat[4], my_hand_id[4])}
+                        {this.renderArrow((hs1>6)?'a':'null', '->')}
+                    </div>
+                </div>
+                );
+            }
+        }
+
+
+        //component which contains the game information
+        
+        class Game extends React.Component {
+            constructor(props) {
+                super(props);
+                this.state = {
+                    init_demo: false,
+                    user: Array(2).fill(null),
+                    info: Array(1).fill(null),
+                    board: Array(2).fill(null),
+                    my_board: 0,
+                    opp_board: 0,
+
+
+                    monsters: Array(60).fill(null),
+                    monster_type: Array(60).fill(null),
+                    type_name: Array(3).fill(null),
+                    archetype_name: Array(3).fill(null),
+                    monster_archetype: Array(3).fill(null),
+                    effects: Array(60).fill(null),
+                    effect_type: Array(60).fill(null),
+                    effect_archetype: Array(60).fill(null),
+                    equipments: Array(60).fill(null),
+                    equipment_type: Array(60).fill(null),
+                    equipment_archetype: Array(60).fill(null),
+                    player_monster: Array(60).fill(null),
+                    player_equipment: Array(60).fill(null),
+                    player_effect: Array(60).fill(null),
+                    board_monster: Array(8).fill(null),
+                    board_equipment: Array(8).fill(null),
+                    board_effect: Array(8).fill(null),
+                    hand_monster: Array(30).fill(null),
+                    hand_equipment: Array(30).fill(null),
+                    hand_effect: Array(30).fill(null),
+
+
+                    hs1: 0,
+                    hs2: 0,
+                    hand_page: 0,
+
+
+                    deck1: Array(30).fill(null),
+                    field1: Array(4).fill(null),
+                    grave1: Array(30).fill(null),
+                    hand1: Array(30).fill(null),
+                    ds1: 0,
+                    gs1: 0,
+                    fs1: 0,
+                    deck2: Array(30).fill(null),
+                    field2: Array(4).fill(null),
+                    grave2: Array(30).fill(null),
+                    hand2: Array(30).fill(null),
+                    ds2: 0,
+                    gs2: 0,
+                    fs2: 0,
+                    stepNumber: 0,
+                    oneIsNext: true,
+                    mana1: 30,
+                    mana2: 30,
+                };
+            }
+
+
+
+            demo_monsters() {
+                return ([
+                {monster_id:0, name:'abcd', attack_points:40, defense_points:50},
+                {monster_id:1, name:'bcde', attack_points:50, defense_points:60},
+                {monster_id:2, name:'cdef', attack_points:60, defense_points:70},
+                {monster_id:3, name:'defg', attack_points:70, defense_points:80},
+                {monster_id:4, name:'efgh', attack_points:80, defense_points:90}
+                ])
+            }
+            
+            demo_monster_type() {
+                return ([
+                {type_id:1, monster_id:0},
+                {type_id:2, monster_id:0},
+                {type_id:2, monster_id:1},
+                {type_id:3, monster_id:2},
+                {type_id:2, monster_id:3},
+                {type_id:1, monster_id:4}
+            ])
+            }
+                
+            demo_type_name() {
+                return ([
+                {type_id:1, name:'beast'},
+                {type_id:2, name:'humanoid'},
+                {type_id:3, name:'spirit'}
+            ])
+            }
+                
+            demo_archetype_name() {
+                return ([
+                {archetype_id:0, name:'olympian'},
+                {archetype_id:1, name:'undead'},
+                {archetype_id:2, name:'elemental'}
+            ])
+            }
+                
+            demo_monster_archetype() {
+                return ([
+                {archetype_id:0, monster_id:0},
+                {archetype_id:1, monster_id:1},
+                {archetype_id:2, monster_id:2}
+            ])
+            }
+                
+            demo_player_monster() {
+                return ([
+                {user_id:0, monster_id:0},
+                {user_id:0, monster_id:1},
+                {user_id:1, monster_id:2},
+                {user_id:1, monster_id:3},
+                {user_id:1, monster_id:4},
+                {user_id:1, monster_id:0}
+            ])
+            }
+                
+            demo_user() {
+                return ([
+                {user_id:0, email:'oiuhyoi', password:'kjgh', wins:0, losses:0, ties:0},
+                {user_id:1, email:'mlkjg', password:'kjgh', wins:0, losses:0, ties:0}
+            ])
+            }
+                
+            demo_effects() {
+                return ([
+                {effect_id:0, name:'eff-defg', attack_points:70, defense_points:80},
+                {effect_id:1, name:'eff-defg2', attack_points:70, defense_points:80},
+                {effect_id:2, name:'eff-defg3', attack_points:70, defense_points:80},
+                {effect_id:3, name:'eff-defg4', attack_points:70, defense_points:80}
+            ])
+            }
+                
+            demo_effect_type() {
+                return ([
+                {type_id:1, effect_id:0},
+                {type_id:2, effect_id:2},
+                {type_id:3, effect_id:1}
+            ])
+            }
+                
+            demo_effect_archetype() {
+                return ([
+                {archetype_id:0, effect_id:3},
+                {archetype_id:1, effect_id:1},
+                {archetype_id:2, effect_id:2}
+            ])
+            }
+                
+            demo_equipments() {
+                return ([
+                {equipment_id:0, name:'equ-defg', attack_points:70, defense_points:80},
+                {equipment_id:1, name:'equ-defg2', attack_points:70, defense_points:80},
+                {equipment_id:2, name:'equ-defg3', attack_points:70, defense_points:80},
+                {equipment_id:3, name:'equ-defg4', attack_points:70, defense_points:80}
+            ])
+            }
+                
+            demo_equipment_type() {
+                return ([
+                {type_id:1, equipment_id:0},
+                {type_id:2, equipment_id:2},
+                {type_id:3, equipment_id:1}
+            ])
+            }
+                
+            demo_equipment_archetype() {
+                return ([
+                {archetype_id:0, equipment_id:3},
+                {archetype_id:1, equipment_id:1},
+                {archetype_id:2, equipment_id:2}
+            ])
+            }
+                
+            demo_player_equipment() {
+                return ([
+                {user_id:0, equipment_id:0},
+                {user_id:0, equipment_id:1},
+                {user_id:1, equipment_id:2},
+                {user_id:1, equipment_id:3},
+                {user_id:1, equipment_id:1},
+                {user_id:1, equipment_id:0}
+                ])
+            }
+                
+            demo_player_effect() {
+                return ([
+                {user_id:0, effect_id:0},
+                {user_id:0, effect_id:1},
+                {user_id:1, effect_id:2},
+                {user_id:1, effect_id:3},
+                {user_id:1, effect_id:1},
+                {user_id:1, effect_id:0}
+                ])
+            }
+                
+            demo_game() {
+                return ([
+                {game_id:0, player_1_id:0, player_2_id:1, turn:true},
+                ])
+            }
+                
+            demo_board() {
+                return ([
+                {board_id:0, game_id:0, user_id:0, health:15},
+                {board_id:1, game_id:0, user_id:1, health:25}
+                ])
+            }
+                
+            demo_board_equipment() {
+                return ([
+                {board_id:0, equipment_id:0},
+                {board_id:1, equipment_id:1},
+                {board_id:1, equipment_id:0}
+                ])
+            }
+                
+            demo_board_effect() {
+                return ([
+                {board_id:0, effect_id:0},
+                {board_id:0, effect_id:1},
+                {board_id:1, effect_id:2},
+                {board_id:1, effect_id:3}
+                ])
+            }
+                
+            demo_board_monster() {
+                return ([
+                {board_id:0, monster_id:0},
+                {board_id:0, monster_id:1},
+                {board_id:1, monster_id:2},
+                {board_id:1, monster_id:3}
+                ])
+            }
+                
+            demo_hand_equipment() {
+                return ([
+                {board_id:0, equipment_id:0},
+                {board_id:1, equipment_id:1}
+                ])
+            }
+                
+            demo_hand_effect() {
+                return ([ 
+                {board_id:0, effect_id:0},
+                {board_id:1, effect_id:3}
+               ])
+            }
+                
+            demo_hand_monster() {
+                return ([ 
+                {board_id:0, monster_id:0},
+                {board_id:1, monster_id:3}
+                ])
+            }
+
+
+
+        
+        
+            
+        
+            render() {
+                const deck_back = this.state.deck1.length;
+
+                
+                if (!this.state.init_demo) {
+                    const my_board = 0;
+                    const opp_board = 1;
+                    var handSize1 = 0;
+                    var handSize2 = 0;
+                    var i;
+                    for (i = 0 ; i < (this.demo_hand_monster()).length ; i++) {
+                        if ((this.demo_hand_monster()[i]).board_id === my_board) {
+                            handSize1++;
+                        } else {
+                            handSize2++;
+                        }
+                    }
+                    for (i=0;i<this.demo_hand_equipment().length;i++) {
+                        if (this.demo_hand_equipment()[i].board_id === my_board) {
+                            handSize1++;
+                        } else {
+                            handSize2++;
+                        }
+                    }
+                    for (i=0;i<this.demo_hand_monster().length;i++) {
+                        if (this.demo_hand_monster()[i].board_id === my_board) {
+                            handSize1++;
+                        } else {
+                            handSize2++;
+                        }
+                    }
+
+                    this.setState({
+                        init_demo: true,
+                        user: this.demo_user(),
+                        info: this.demo_game(),
+                        board: this.demo_board(),
+
+
+                        monsters: this.demo_monsters(),
+                        monster_type: this.demo_monster_type(),
+                        type_name: this.demo_type_name(),
+                        archetype_name: this.demo_archetype_name(),
+                        monster_archetype: this.demo_monster_archetype(),
+                        effects: this.demo_effects(),
+                        effect_type: this.demo_effect_type(),
+                        effect_archetype: this.demo_effect_archetype(),
+                        equipments: this.demo_equipments(),
+                        equipment_type: this.demo_equipment_type(),
+                        equipment_archetype: this.demo_equipment_archetype(),
+                        player_monster: this.demo_player_monster(),
+                        player_equipment: this.demo_player_equipment(),
+                        player_effect: this.demo_player_effect(),
+                        board_monster: this.demo_board_monster(),
+                        board_equipment: this.demo_board_equipment(),
+                        board_effect: this.demo_board_effect(),
+                        hand_monster: this.demo_hand_monster(),
+                        hand_equipment: this.demo_hand_equipment(),
+                        hand_effect: this.demo_hand_effect(),
+
+                        
+                        hs1: handSize1,
+                        hs2: handSize2,
+                        my_board: my_board,
+                        opp_board: opp_board,
+                        hand_page: 0,
+                    });
+                }
+                
+        
+                return (
+                <div className="game">
+                    <div className="game-board">
+                        <Board
+                        field1={this.state.field1}
+                        field2={this.state.field2}
+                        deck1={this.state.ds1}
+                        grave1={this.state.gs1}
+                        deck2={this.state.ds2}
+                        grave2={this.state.gs2}
+
+
+                        hs1={this.state.hs1}
+                        hs2={this.state.hs2}
+                        hand_page={this.state.hand_page}
+                        my_board={this.state.my_board}
+                        opp_board={this.state.opp_board}
+
+                        monsters={this.state.monsters}
+                        monster_type={this.state.monster_type}
+                        type_name={this.state.type_name}
+                        archetype_name={this.state.archetype_name}
+                        monster_archetype={this.state.monster_archetype}
+                        effects={this.state.effects}
+                        effect_type={this.state.effect_type}
+                        effect_archetype={this.state.effect_archetype}
+                        equipments={this.state.equipments}
+                        equipment_type={this.state.equipment_type}
+                        equipment_archetype={this.state.equipment_archetype}
+                        player_monster={this.state.player_monster}
+                        player_equipment={this.state.player_equipment}
+                        player_effect={this.state.player_effect}
+                        board_monster={this.state.board_monster}
+                        board_equipment={this.state.board_equipment}
+                        board_effect={this.state.board_effect}
+                        hand_monster={this.state.hand_monster}
+                        hand_equipment={this.state.hand_equipment}
+                        hand_effect={this.state.hand_effect}
+                        
+
+
+                        deckClick={() => this.handleDraw()}
+                        onClick={(i) => this.handleClick(i)}
+                        />
+                    </div>
+                    <div className="game-info">
+                        <div>{'Your mana: 25'}</div>
+                    </div>
+                </div>
+                );
+            }
+        }
+        
+        /*
+        
+        */
+        
+        // ========================================
+        
+        ReactDOM.render(
+            <Game />,
+            document.getElementById('content')
+        );
+
+
+    </script>
+  </body>
+</html>

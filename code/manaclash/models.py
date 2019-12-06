@@ -109,6 +109,33 @@ board_equipment = db.Table('board_equipment-association', db.metadata,
                                      db.ForeignKey('board.id'))
                            )
 
+hand_monster = db.Table('hand_monster-association', db.metadata,
+                        db.Column('monster_id',
+                                  db.Integer,
+                                  db.ForeignKey('monster.id')),
+                        db.Column('board_id',
+                                  db.Integer,
+                                  db.ForeignKey('board.id'))
+                        )
+
+hand_monster_effect = db.Table('hand_monster_effect-association', db.metadata,
+                               db.Column('monster_effect_id',
+                                         db.Integer,
+                                         db.ForeignKey('monster_effect.id')),
+                               db.Column('board_id',
+                                         db.Integer,
+                                         db.ForeignKey('board.id'))
+                               )
+
+hand_equipment = db.Table('hand_equipment-association', db.metadata,
+                          db.Column('equipment_id',
+                                    db.Integer,
+                                    db.ForeignKey('equipment.id')),
+                          db.Column('board_id',
+                                    db.Integer,
+                                    db.ForeignKey('board.id'))
+                          )
+
 
 class Monster(db.Model):
     __tablename__ = "monster"
@@ -137,6 +164,11 @@ class Monster(db.Model):
                              back_populates="monsters",
                              lazy=True)
 
+    hands = db.relationship("Board",
+                            secondary=hand_monster,
+                            back_populates="hand_monsters",
+                            lazy=True)
+
     def __init__(self, name, attack_points, defense_points):
         self.name = name
         self.attack_points = attack_points
@@ -144,7 +176,7 @@ class Monster(db.Model):
 
     def __repr__(self):
         return (f"Monster('{self.name}', Attack: {self.attack_points}, "
-                f"Defense: '{self.defense_points}')")
+                f"Defense: '{self.defense_points}', ID: '{self.id}')")
 
 
 class Type(db.Model):
@@ -229,6 +261,10 @@ class Equipment(db.Model):
                              secondary=board_equipment,
                              back_populates="equipment",
                              lazy=True)
+    hands = db.relationship("Board",
+                            secondary=hand_equipment,
+                            back_populates="hand_equipment",
+                            lazy=True)
 
     def __init__(self, name):
         self.name = name
@@ -244,13 +280,8 @@ class MonsterEffect(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(25), unique=False, nullable=False)
 
-    #   SQLAlchemy supports JSON as a data type in a column
-    #   However: adding using our current admin panel would be annoying,
-    #   because users would have to write in JSON format.
-    #   We need to modify the Update operator for this specific class
-    #   if we want probabilistic modification of monster attributes.
-    attack = db.Column(db.Integer, unique=False, nullable=False)
-    defense = db.Column(db.Integer, unique=False, nullable=False)
+    attack_points = db.Column(db.Integer, unique=False, nullable=True)
+    defense_points = db.Column(db.Integer, unique=False, nullable=True)
 
     types = db.relationship("Type",
                             secondary=monster_effect_type,
@@ -268,6 +299,10 @@ class MonsterEffect(db.Model):
                              secondary=board_monster_effect,
                              back_populates="monster_effects",
                              lazy=True)
+    hands = db.relationship("Board",
+                            secondary=hand_monster_effect,
+                            back_populates="hand_monster_effects",
+                            lazy=True)
 
     def __init__(self, name, attack_points, defense_points):
         self.name = name
@@ -275,8 +310,8 @@ class MonsterEffect(db.Model):
         self.defense_points = defense_points
 
     def __repr__(self):
-        return (f"Equipment('{self.name}'), Attack: {self.attack_points}, "
-                f"Defense: '{self.defense_points}')")
+        return (f"Monster Effect('{self.name}'), Attack: {self.attack_points}, "
+                f"Defense: '{self.defense_points}'), ID: '{self.id}'")
 
 
 @login_manager.user_loader
@@ -335,10 +370,9 @@ class Game(db.Model):
 
     boards = db.relationship("Board")
 
-    def __init__(self, player_one, player_two, turn):
+    def __init__(self, player_one, player_two):
         self.player_one = player_one
         self.player_two = player_two
-        self.turn = turn
 
     def __repr__(self):
         return (f"Game: Player 1('{self.player_one}') "
@@ -368,11 +402,22 @@ class Board(db.Model):
                                 secondary=board_equipment,
                                 back_populates="boards",
                                 lazy=True)
+    hand_monsters = db.relationship("Monster",
+                                    secondary=hand_monster,
+                                    back_populates="hands",
+                                    lazy=True)
+    hand_monster_effects = db.relationship("MonsterEffect",
+                                           secondary=hand_monster_effect,
+                                           back_populates="hands",
+                                           lazy=True)
+    hand_equipment = db.relationship("Equipment",
+                                     secondary=hand_equipment,
+                                     back_populates="hands",
+                                     lazy=True)
 
-    def __init__(self, game_id, user_id, health):
+    def __init__(self, game_id, user_id):
         self.game_id = game_id
         self.user_id = user_id
-        self.health = health
 
     def __repr__(self):
         return (f"Board: Player('{self.user_id}') "
