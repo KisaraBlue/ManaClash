@@ -27,6 +27,7 @@ login_manager.login_message_category = 'info'
 from manaclash import routes
 from manaclash.models import Monster, Type, Archetype, Equipment, MonsterEffect
 from manaclash.models import User, Game, Board
+from manaclash.models import BoardMonster, BoardMonsterEffect, BoardEquipment
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
@@ -44,3 +45,6 @@ admin.add_view(ModelView(MonsterEffect, db.session))
 admin.add_view(ModelView(User, db.session))
 admin.add_view(ModelView(Game, db.session))
 admin.add_view(ModelView(Board, db.session))
+admin.add_view(ModelView(BoardMonster, db.session))
+admin.add_view(ModelView(BoardMonsterEffect, db.session))
+admin.add_view(ModelView(BoardEquipment, db.session))
