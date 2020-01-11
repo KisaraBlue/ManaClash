@@ -351,6 +351,15 @@ class Board(db.Model):
                 f"Health: '{self.health}'")
 
 
+import enum
+
+
+class State(enum.Enum):
+    Hand = 0
+    Active = 1
+    Discarded = 2
+
+
 class BoardMonster(db.Model):
     __tablename__ = 'board_monster'
     board_id = db.Column(db.Integer,
@@ -360,7 +369,7 @@ class BoardMonster(db.Model):
     monster_id = db.Column(db.Integer,
                            db.ForeignKey('monster.id'),
                            primary_key=True)
-    state = db.Column(db.Integer, nullable=True, default=0)
+    state = db.Column(db.Enum(State), nullable=True, default=0)
 
     board = db.relationship(Board,
                             backref=db.backref("board_monsters",
@@ -383,7 +392,7 @@ class BoardMonsterEffect(db.Model):
     monster_effect_id = db.Column(db.Integer,
                                   db.ForeignKey('monster_effect.id'),
                                   primary_key=True)
-    state = db.Column(db.Integer, nullable=True, default=0)
+    state = db.Column(db.Enum(State), nullable=True, default=0)
 
     board = db.relationship(Board,
                             backref=db.backref("board_monster_effects",
@@ -410,7 +419,7 @@ class BoardEquipment(db.Model):
     monster_id = db.Column(db.Integer,
                            db.ForeignKey('monster.id'),
                            nullable=True)
-    state = db.Column(db.Integer, nullable=True, default=0)
+    state = db.Column(db.Enum(State), nullable=True, default=0)
 
     board = db.relationship(Board,
                             backref=db.backref("board_equipment",
