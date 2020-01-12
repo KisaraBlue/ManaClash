@@ -333,7 +333,9 @@ class Board(db.Model):
     health = db.Column(db.Integer, nullable=True, default=10)
 
     monsters = association_proxy('board_monsters',
-                                 'board')
+                                 'monster')
+
+    # board_monsters = db.relationship("BoardMonster")
 
     monster_effects = association_proxy('board_monster_effects',
                                         'board')
@@ -369,17 +371,22 @@ class BoardMonster(db.Model):
     monster_id = db.Column(db.Integer,
                            db.ForeignKey('monster.id'),
                            primary_key=True)
-    monster = db.relationship("Monster",
-                              foreign_keys=[monster_id])
 
     state = db.Column(db.Enum(State), nullable=True, default=State.Hand)
 
     board = db.relationship(Board,
                             backref=db.backref("board_monsters",
                                                cascade="all, delete-orphan"))
+    monster = db.relationship("Monster")
 
-    def __init__(self, monster):
+    def __init__(self, monster, board=None, state=State.Hand):
         self.monster = monster
+        self.board = board
+        self.state = state
+
+    def __repr__(self):
+        return (f"Board: ID('{self.board.id}') "
+                f"Monster: ID('{self.monster.id}') ")
 
 
 class BoardMonsterEffect(db.Model):

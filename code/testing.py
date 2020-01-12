@@ -80,3 +80,7 @@ from controller import Controller
 
 Battle = Controller(david, charlie)
 Battle.play()
+
+# print([monster.id for monster in david.monsters])
+
+david.boards[0].monsters.append(nietzsche)

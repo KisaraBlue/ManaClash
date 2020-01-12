@@ -158,12 +158,13 @@ class Controller():
 
     def draw(self, user, user_board):
         new_card = False
+        enough_cards = True
 
         NUM_OF_MONSTERS = len(user.monsters)
         NUM_OF_MONSTER_EFFECTS = len(user.monster_effects)
         NUM_OF_EQUIPMENT = len(user.equipment)
 
-        while not new_card:
+        while (not new_card) and enough_cards:
             #   possible infinite loop: no more new cards in deck.
             #   suggested fix: check if number of cards that are
             #   in user board is less than (strictly) the number
@@ -171,23 +172,39 @@ class Controller():
             x = random.randrange(0, NUM_OF_MONSTERS
                                  + NUM_OF_MONSTER_EFFECTS
                                  + NUM_OF_EQUIPMENT)
-            print(x)
+            print("Loop started with x = ", x)
             if x in range(0, NUM_OF_MONSTERS - 1):
                 #   Here we retrieve a monster from the deck and place it
                 #   in a user's hand.
                 y = 0
                 print("getting monster")
-                while (not new_card) and (y < len(user.monsters)):
+                print("Enough?", enough_cards)
+                while (not new_card) and (y < NUM_OF_MONSTERS)\
+                        and enough_cards:
+                    print("Inner while loop")
                     new_monster = user.monsters[y]
-                    print("New monster: ", new_monster)
-                    if new_monster not in user_board.monsters \
-                       and new_monster not in user_board.monsters:
+                    print("Attempting monster: ", new_monster)
 
-                        print(new_monster.id)
-                        #   add new_monster somehow
+                    board_monsters = [monster.id
+                                      for monster in user_board.monsters]
+                    print(board_monsters)
+
+                    if new_monster.id not in board_monsters:
+                        print("All clear!")
+                        print("Adding monster: ", new_monster.id)
+
                         user_board.monsters.append(new_monster)
+                        print("Monster added: ", new_monster)
                         new_card = True
+                    else:
+                        print("Monster already added!")
                     y = y + 1
+                    print("y = ", y)
+                    if y == NUM_OF_MONSTERS:
+                        enough_cards = False
+                        print("No more cards!")
+                print("Outside of inner loop")
+
             elif x in range(NUM_OF_MONSTERS,
                             NUM_OF_MONSTERS
                             + NUM_OF_MONSTER_EFFECTS - 1):
@@ -223,7 +240,7 @@ class Controller():
                                   .append(new_equipment)
                     y = y + 1
             else:
-                print("Error!!!!! Random number not in range!!!!!")
+                print(x, "Error!!!!! Random number not in range!!!!!")
         db.session.add(user_board)
         db.session.commit()
         return user_board
@@ -231,7 +248,7 @@ class Controller():
     def play(self):
         print("Game started.")
         print("Drawing initial hand.")
-        for i in range(6):
+        for i in range(3):
             self.draw(self.player_one, self.board_one)
             self.draw(self.player_two, self.board_two)
 
@@ -250,12 +267,10 @@ class Controller():
                 self.draw(player, board)
                 print(board)
                 print("Current hand:")
-                for monster in board.monsters:
-                    if monster.state == State.Hand:
-                        print(monster)
-
-                print("Active monsters:")
-                print(board.monsters)
+                hand_monsters = BoardMonster.query\
+                                            .filter_by(board_id=board.id,
+                                                       state=State.Hand).all()
+                print(hand_monsters)
 
                 print("Active effects:")
                 print(board.monster_effects)
