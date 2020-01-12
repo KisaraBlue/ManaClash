@@ -6,8 +6,9 @@ from manaclash import db
 
 from manaclash import User, Game, Board
 from manaclash import Monster, MonsterEffect
+from manaclash import BoardMonster
 from manaclash import Type
-from manaclash.models import board_monster_effect
+from manaclash.models import State
 
 import sys
 
@@ -68,7 +69,10 @@ class Controller():
 
     def activate_monster(self, monster, board):
         board.monsters.append(monster)
-        board.hand_monsters.remove(monster)
+        BoardMonster.query.filter_by(monster_id=monster.id,
+                                     board_id=board.id)\
+                          .first()\
+                          .state = State.Active
 
         db.session.add(board)
         db.session.commit()
@@ -95,13 +99,7 @@ class Controller():
         defense_bonus = 0
 
         for effect in board.monster_effects:
-            is_active = True
-            if effect in board.hand_monster_effects:
-                #   if an effect is in the player's hand
-                #   and it is in the board, then it was
-                #   discarded (because effects are unique)
-                is_active = False
-            if is_active:
+            if effect.state is State.Active:
                 common_types = False
                 common_archetypes = 0
 
@@ -161,52 +159,72 @@ class Controller():
     def draw(self, user, user_board):
         new_card = False
 
-        x = random.randrange(1, 100)
-        if x % 2 == 0:
-            #   Draw monster
-            y = 0
-            print("getting monster")
-            while not new_card and y < len(user.monsters):
-                new_monster = user.monsters[y]
-                if new_monster not in user_board.hand_monsters \
-                   and new_monster not in user_board.monsters:
-                    print(new_monster.id)
-                    user_board.hand_monsters.append(new_monster)
-                    new_card = True
-                y = y + 1
+        NUM_OF_MONSTERS = len(user.monsters)
+        NUM_OF_MONSTER_EFFECTS = len(user.monster_effects)
+        NUM_OF_EQUIPMENT = len(user.equipment)
 
-        else:
-            #   Draw MonsterEffect
-            y = 0
-            print("getting monstereffect")
-            while (not new_card) & (y < len(user.monster_effects)):
-                if len(user.monster_effects) != 0:
-                    new_monster_effect = user.monster_effects[y]
-                else:
-                    new_monster_effect = None
-                if new_monster_effect is not None:
-                    if new_monster_effect not in user_board.hand_monster_effects \
-                       and new_monster_effect not in user_board.monster_effects:
+        x = random.randrange(0, NUM_OF_MONSTERS
+                             + NUM_OF_MONSTER_EFFECTS
+                             + NUM_OF_EQUIPMENT)
+        while not new_card:
+            #   possible infinite loop: no more new cards in deck.
+            #   suggested fix: check if number of cards that are
+            #   in user board is less than (strictly) the number
+            #   of cards in deck.
+            if x in range(0, NUM_OF_MONSTERS - 1):
+                #   Here we retrieve a monster from the deck and place it
+                #   in a user's hand.
+                y = 0
+                print("getting monster")
+                while not new_card and y < len(user.monsters):
+                    new_monster = user.monsters[y]
+                    if new_monster not in user_board.monsters \
+                       and new_monster not in user_board.monsters:
+
+                        print(new_monster.id)
+                        user_board.monsters.append(new_monster)
+
                         new_card = True
-                    user_board.hand_monster_effects.append(new_monster_effect)
-                y = y + 1
+                    y = y + 1
+            elif x in range(NUM_OF_MONSTERS,
+                            NUM_OF_MONSTERS
+                            + NUM_OF_MONSTER_EFFECTS - 1):
+                y = 0
+                print("getting monstereffect")
+                while not new_card and y < len(user.monster_effects):
+                    if len(user.monster_effects) != 0:
+                        new_monster_effect = user.monster_effects[y]
+                    else:
+                        new_monster_effect = None
+                    if new_monster_effect is not None:
+                        if new_monster_effect not in user_board.monster_effects:
+                            new_card = True
+                        user_board.monster_effects\
+                                  .append(new_monster_effect)
+                    y = y + 1
 
+            elif x in range(NUM_OF_MONSTERS + NUM_OF_MONSTER_EFFECTS,
+                            NUM_OF_MONSTERS
+                            + NUM_OF_MONSTER_EFFECTS
+                            + NUM_OF_EQUIPMENT - 1):
+                y = 0
+                print("getting equipment")
+                while not new_card and y < len(user.equipment):
+                    if len(user.equipment) != 0:
+                        new_equipment = user.equipment[y]
+                    else:
+                        new_equipment = None
+                    if new_equipment is not None:
+                        if new_equipment not in user_board.equipment:
+                            new_card = True
+                        user_board.equipment\
+                                  .append(new_equipment)
+                    y = y + 1
+            else:
+                print("Error!!!!! Random number not in range!!!!!")
         db.session.add(user_board)
         db.session.commit()
         return user_board
-
-        """elif x == 3:
-            #   Draw new Equipment
-            while not new_card:
-                y = random.randrange(0, len(user.equipment) - 1)
-                new_equipment = user.equipment[y]
-
-                if new_equipment not in user_board.hand_equipment
-                   and new_equipment not in user_board.equipment:
-                    new_card = True
-            user_board.hand_equipment.append(new_equipment)
-            return user_board
-        """
 
     def play(self):
         print("Game started.")
@@ -230,7 +248,9 @@ class Controller():
                 self.draw(player, board)
                 print(board)
                 print("Current hand:")
-                print(board.hand_monsters, board.hand_monster_effects)
+                for monster in board.monsters:
+                    if monster.state == State.Hand:
+                        print(monster)
 
                 print("Active monsters:")
                 print(board.monsters)
@@ -254,15 +274,6 @@ class Controller():
                         .query\
                         .filter_by(id=effect_id).first()
                     self.activate_monster(effect, board)
-
-                print("Current hand:")
-                print(board.hand_monsters, board.hand_monster_effects)
-
-                print("Active monsters:")
-                print(board.monsters)
-
-                print("Active effects:")
-                print(board.monster_effects)
 
                 attack = query_yes_no("Do you want to attack?")
 
@@ -299,6 +310,5 @@ if __name__ == "__main__":
     charlie = User.query.filter_by(username='charlie').first()
     david = User.query.filter_by(username='david').first()
 
-    grim = Monster.query.filter_by
     Battle = Controller(charlie, david)
     Battle.play()

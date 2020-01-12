@@ -340,7 +340,7 @@ class Board(db.Model):
     equipment = association_proxy('board_equipment',
                                   'board')
 
-    def __init__(self, game_id, user_id, health):
+    def __init__(self, game_id, user_id, health=10):
         self.game_id = game_id
         self.user_id = user_id
         self.health = health
@@ -369,7 +369,7 @@ class BoardMonster(db.Model):
     monster_id = db.Column(db.Integer,
                            db.ForeignKey('monster.id'),
                            primary_key=True)
-    state = db.Column(db.Enum(State), nullable=True, default=0)
+    state = db.Column(db.Enum(State), nullable=True, default=State.Hand)
 
     board = db.relationship(Board,
                             backref=db.backref("board_monsters",
@@ -377,7 +377,7 @@ class BoardMonster(db.Model):
 
     monster = db.relationship("Monster")
 
-    def __init__(self, board, monster, state=0):
+    def __init__(self, board, monster, state=State.Hand):
         self.board = board
         self.monster = monster
         self.state = state
