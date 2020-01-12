@@ -369,18 +369,17 @@ class BoardMonster(db.Model):
     monster_id = db.Column(db.Integer,
                            db.ForeignKey('monster.id'),
                            primary_key=True)
+    monster = db.relationship("Monster",
+                              foreign_keys=[monster_id])
+
     state = db.Column(db.Enum(State), nullable=True, default=State.Hand)
 
     board = db.relationship(Board,
                             backref=db.backref("board_monsters",
                                                cascade="all, delete-orphan"))
 
-    monster = db.relationship("Monster")
-
-    def __init__(self, board, monster, state=State.Hand):
-        self.board = board
+    def __init__(self, monster):
         self.monster = monster
-        self.state = state
 
 
 class BoardMonsterEffect(db.Model):

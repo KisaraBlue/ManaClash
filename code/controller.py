@@ -163,27 +163,29 @@ class Controller():
         NUM_OF_MONSTER_EFFECTS = len(user.monster_effects)
         NUM_OF_EQUIPMENT = len(user.equipment)
 
-        x = random.randrange(0, NUM_OF_MONSTERS
-                             + NUM_OF_MONSTER_EFFECTS
-                             + NUM_OF_EQUIPMENT)
         while not new_card:
             #   possible infinite loop: no more new cards in deck.
             #   suggested fix: check if number of cards that are
             #   in user board is less than (strictly) the number
             #   of cards in deck.
+            x = random.randrange(0, NUM_OF_MONSTERS
+                                 + NUM_OF_MONSTER_EFFECTS
+                                 + NUM_OF_EQUIPMENT)
+            print(x)
             if x in range(0, NUM_OF_MONSTERS - 1):
                 #   Here we retrieve a monster from the deck and place it
                 #   in a user's hand.
                 y = 0
                 print("getting monster")
-                while not new_card and y < len(user.monsters):
+                while (not new_card) and (y < len(user.monsters)):
                     new_monster = user.monsters[y]
+                    print("New monster: ", new_monster)
                     if new_monster not in user_board.monsters \
                        and new_monster not in user_board.monsters:
 
                         print(new_monster.id)
+                        #   add new_monster somehow
                         user_board.monsters.append(new_monster)
-
                         new_card = True
                     y = y + 1
             elif x in range(NUM_OF_MONSTERS,

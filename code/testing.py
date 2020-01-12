@@ -60,9 +60,23 @@ zeus.types.append(olympian)
 db.session.add_all([nietzsche, frege, hume, poseidon, zeus, hades])
 db.session.commit()
 
+"""
 print(Monster.query.filter(Monster.types.any(Type.name == 'Philosopher')).all())
+"""
+
+david.monsters.append(nietzsche)
+david.monsters.append(frege)
+david.monsters.append(hume)
+
+charlie.monsters.append(poseidon)
+charlie.monsters.append(zeus)
+charlie.monsters.append(hades)
+
+db.session.add_all([david, charlie])
+db.session.commit()
+
 
 from controller import Controller
 
-Battle = Controller(charlie, david)
+Battle = Controller(david, charlie)
 Battle.play()
