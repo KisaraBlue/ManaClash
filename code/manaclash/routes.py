@@ -83,7 +83,9 @@ def account():
                            title='Account')
 
 
-@api.route('/user/id=<int:id>')
+@api.route('/user/id=<int:id>',
+           doc={'description': 'Get User stats from user id.'})
+@api.doc(params={'id': 'User ID'})
 class GetUserStats(Resource):
     def get(self, id):
         user = User.query.filter_by(id=id).first()
@@ -97,7 +99,9 @@ class GetUserStats(Resource):
         }
 
 
-@api.route('/user/board/id=<int:id>')
+@api.route('/user/board/id=<int:id>',
+           doc={'description': 'Get all user boards from user id.'})
+@api.doc(params={'id': 'User ID'})
 class GetUserBoards(Resource):
     def get(self, id):
         user = User.query.filter_by(id=id).first()
@@ -106,7 +110,9 @@ class GetUserBoards(Resource):
         }
 
 
-@api.route('/monster/id=<int:id>')
+@api.route('/monster/id=<int:id>',
+           doc={'description': 'Get monster name and attributes from id.'})
+@api.doc(params={'id': 'Monster ID'})
 class GetMonsterStats(Resource):
     def get(self, id):
         monster = Monster.query.filter_by(id=id).first()
@@ -118,7 +124,9 @@ class GetMonsterStats(Resource):
         }
 
 
-@api.route('/monster/type/id=<int:id>')
+@api.route('/monster/type/id=<int:id>',
+           doc={'description': 'Get monster types from id.'})
+@api.doc(params={'id': 'Monster ID'})
 class GetMonsterType(Resource):
     def get(self, id):
         monster = Monster.query.filter_by(id=id).first()
@@ -128,7 +136,9 @@ class GetMonsterType(Resource):
         }
 
 
-@api.route('/monster/archetype/id=<int:id>')
+@api.route('/monster/archetype/id=<int:id>',
+           doc={'description': 'Get monster archetypes from id.'})
+@api.doc(params={'id': 'Monster ID'})
 class GetMonsterArchetype(Resource):
     def get(self, id):
         monster = Monster.query.filter_by(id=id).first()
@@ -139,7 +149,10 @@ class GetMonsterArchetype(Resource):
         }
 
 
-@api.route('/effect/monster/id=<int:id>')
+@api.route('/effect/monster/id=<int:id>',
+           doc={'description': 'Get monster effect name, '
+                               'attack bonus, and defense bonus from id.'})
+@api.doc(params={'id': 'MonsterEffect ID'})
 class GetMonsterEffectStats(Resource):
     def get(self, id):
         monster_effect = MonsterEffect.query.filter_by(id=id).first()
@@ -152,7 +165,10 @@ class GetMonsterEffectStats(Resource):
         }
 
 
-@api.route('/effect/monster/type/id=<int:id>')
+@api.route('/effect/monster/type/id=<int:id>',
+           doc={'description': 'Get monster effect types '
+                               'from id.'})
+@api.doc(params={'id': 'MonsterEffect ID'})
 class GetMonsterEffectType(Resource):
     def get(self, id):
         monster_effect = MonsterEffect.query.filter_by(id=id).first()
@@ -163,7 +179,10 @@ class GetMonsterEffectType(Resource):
         }
 
 
-@api.route('/effect/monster/archetype/id=<int:id>')
+@api.route('/effect/monster/archetype/id=<int:id>',
+           doc={'description': 'Get monster effect archetypes '
+                               'from id.'})
+@api.doc(params={'id': 'MonsterEffect ID'})
 class GetMonsterEffectArchetype(Resource):
     def get(self, id):
         monster_effect = MonsterEffect.query.filter_by(id=id).first()
@@ -175,7 +194,10 @@ class GetMonsterEffectArchetype(Resource):
         }
 
 
-@api.route('/board/id=<int:id>')
+@api.route('/board/id=<int:id>',
+           doc={'description': 'Get game_id, board (player) health '
+                               'from id.'})
+@api.doc(params={'id': 'Board ID'})
 class GetBoardStats(Resource):
     def get(self, id):
         board = Board.query.filter_by(id=id).first()
@@ -187,7 +209,11 @@ class GetBoardStats(Resource):
         }
 
 
-@api.route('/board/hand/id=<int:id>')
+@api.route('/board/hand/id=<int:id>',
+           doc={'description': 'Get all cards (monsters and monster effects) '
+                               'in hand on a board '
+                               'from id.'})
+@api.doc(params={'id': 'Board ID'})
 class GetBoardHand(Resource):
     def get(self, id):
         hand_monsters = BoardMonster.query\
@@ -209,7 +235,11 @@ class GetBoardHand(Resource):
         }
 
 
-@api.route('/board/field/id=<int:id>')
+@api.route('/board/field/id=<int:id>',
+           doc={'description': 'Get all cards (monsters and monster effects) '
+                               'on field (active) on a board '
+                               'from id.'})
+@api.doc(params={'id': 'Board ID'})
 class GetBoardField(Resource):
     def get(self, id):
         field_monsters = BoardMonster.query\
@@ -231,7 +261,11 @@ class GetBoardField(Resource):
         }
 
 
-@api.route('/board/discarded/id=<int:id>')
+@api.route('/board/discarded/id=<int:id>',
+           doc={'description': 'Get all cards (monsters and monster effects) '
+                               'that were discarded (graveyard) on a board '
+                               'from id.'})
+@api.doc(params={'id': 'Board ID'})
 class GetBoardDiscarded(Resource):
     def get(self, id):
         dead_monsters = BoardMonster.query\
@@ -253,9 +287,13 @@ class GetBoardDiscarded(Resource):
         }
 
 
-@api.route('/game/player1=<int:id1>/player2=<int:id2>')
+@api.route('/game/player1=<int:id1>/player2=<int:id2>',
+           doc={'description': 'Create a new game between two players '
+                               'from two user IDs.'})
+@api.doc(params={'id1': 'Player One ID',
+                 'id2': 'Player Two ID'})
 class CreateGame(Resource):
-    def get(self, id1, id2):
+    def put(self, id1, id2):
         player_one = User.query.filter_by(id=id1).first()
         player_two = User.query.filter_by(id=id2).first()
 
@@ -276,9 +314,14 @@ class CreateGame(Resource):
 
 @api.route(
     '/board/activate/'
-    'monster/monster=<int:monster_id>/board=<int:board_id>')
+    'monster/monster=<int:monster_id>/board=<int:board_id>',
+    doc={'description': 'Place monster on field '
+                        'on a board '
+                        'from monster id and board id.'})
+@api.doc(params={'monster_id': 'Monster ID',
+                 'board_id': 'Board ID'})
 class ActivateMonster(Resource):
-    def get(self, monster_id, board_id):
+    def put(self, monster_id, board_id):
         board = Board.query.filter_by(id=board_id)
 
         BoardMonster.query.filter_by(monster_id=monster_id,
@@ -296,9 +339,14 @@ class ActivateMonster(Resource):
 
 @api.route(
     '/board/activate/'
-    'effect/monster/id=<int:id>/board=<int:board_id>')
+    'effect/monster/id=<int:id>/board=<int:board_id>',
+    doc={'description': 'Activate Monster Effect '
+                        'on a board '
+                        'from monster_effect id and board id.'})
+@api.doc(params={'id': 'MonsterEffect ID',
+                 'board_id': 'Board ID'})
 class ActivateMonsterEffect(Resource):
-    def get(self, id, board_id):
+    def put(self, id, board_id):
         board = Board.query.filter_by(id=board_id)
 
         BoardMonsterEffect.query.filter_by(monster_effect_id=id,
@@ -316,19 +364,13 @@ class ActivateMonsterEffect(Resource):
 
 @api.route(
     '/board/evaluate/'
-    'effects/monster/id=<int:board_id>/monster_id=<int:monster_id>')
+    'effects/monster/id=<int:board_id>/monster_id=<int:monster_id>',
+    doc={'description': 'Evaluate all active MonsterEffects on board '
+                        'for a monster '
+                        'from monster id and board id.'})
+@api.doc(params={'monster_id': 'Monster ID',
+                 'board_id': 'Board ID'})
 class EvaluateMonsterEffects(Resource):
-    """
-    Evaluate all active MonsterEffects on a given board, on a given Monster.
-    Input:
-        -   The player's board
-        -   Monster
-    Output:
-        -   JSON(attack_bonus, defense_bonus) where attack_bonus
-            is how much the attack_points of the monster are changed,
-            and defense_bonus is how much the defense_points of the monster
-            are changed.
-    """
     def get(self, board_id, monster_id):
         board = Board.query.filter_by(id=board_id)
         monster = Monster.query.filter_by(id=monster_id).first()
@@ -360,9 +402,14 @@ class EvaluateMonsterEffects(Resource):
 
 @api.route(
     '/board/discard/'
-    'monster/monster_id=<int:monster_id>/board_id=<int:board_id>')
+    'monster/monster_id=<int:monster_id>/board_id=<int:board_id>',
+    doc={'description': 'Discard a monster from board '
+                        'from monster id and board id. '
+                        'Also decrements player health.'})
+@api.doc(params={'monster_id': 'Monster ID',
+                 'board_id': 'Board ID'})
 class DiscardMonster(Resource):
-    def get(self, monster_id, board_id):
+    def put(self, monster_id, board_id):
         #   if a monster is being discarded, a player loses a health point
         board = Board.query.filter_by(id=board_id)
         board.health = board.health - 1
@@ -382,30 +429,37 @@ class DiscardMonster(Resource):
 
 @api.route(
     '/board/discard/'
-    'effect/monster/id=<int:id>/board_id=<int:board_id>')
+    'effect/monster/id=<int:id>/board_id=<int:board_id>',
+    doc={'description': 'Discard a monster effect from board '
+                        'from monster_effect id and board id. '})
+@api.doc(params={'id': 'MonsterEffect ID',
+                 'board_id': 'Board ID'})
 class DiscardMonsterEffect(Resource):
-    def get(self, id, board_id):
-        def get(self, id, board_id):
-            board = Board.query.filter_by(id=board_id)
+    def put(self, id, board_id):
+        board = Board.query.filter_by(id=board_id)
 
-            BoardMonsterEffect.query.filter_by(monster_effect_id=id,
-                                               board_id=board_id)\
-                              .first()\
-                              .state = State.Discarded
+        BoardMonsterEffect.query.filter_by(monster_effect_id=id,
+                                           board_id=board_id)\
+                          .first()\
+                          .state = State.Discarded
 
-            db.session.add(board)
-            db.session.commit()
+        db.session.add(board)
+        db.session.commit()
 
-            return{
-                'board_id': board_id
-            }
+        return{
+            'board_id': board_id
+        }
 
 
 @api.route(
     '/board/draw/'
-    'user_id=<int:user_id>/board_id=<int:board_id>')
+    'user_id=<int:user_id>/board_id=<int:board_id>',
+    doc={'description': 'Draw a card for a user from user deck. '
+                        'Adds card to user hand on given board. '})
+@api.doc(params={'user_id': 'User ID',
+                 'board_id': 'Board ID'})
 class Draw(Resource):
-    def get(self, user_id, board_id):
+    def put(self, user_id, board_id):
         user = User.query.filter_by(id=user_id).first()
         user_board = Board.query.filter_by(id=board_id).first()
 
