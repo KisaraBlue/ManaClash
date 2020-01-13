@@ -299,9 +299,10 @@ class Game(db.Model):
 
     boards = db.relationship("Board")
 
-    def __init__(self, player_one, player_two):
+    def __init__(self, player_one, player_two, turn=0):
         self.player_one = player_one
         self.player_two = player_two
+        self.turn = turn
 
     def __repr__(self):
         return (f"Game: Player 1('{self.player_one}') "
@@ -358,7 +359,7 @@ import enum
 
 class State(enum.Enum):
     Hand = 0
-    Active = 1
+    Field = 1
     Discarded = 2
 
 
