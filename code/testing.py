@@ -76,11 +76,26 @@ db.session.add_all([david, charlie])
 db.session.commit()
 
 
+pstone = MonsterEffect("Philosopher's Stone",
+                       attack_points=50,
+                       defense_points=100)
+
+trident = MonsterEffect("Trident",
+                        attack_points=100,
+                        defense_points=50)
+
+david.monster_effects.append(pstone)
+charlie.monster_effects.append(trident)
+
+db.session.add_all([pstone, trident, david, charlie])
+db.session.commit()
+
 from controller import Controller
 
 Battle = Controller(david, charlie)
-Battle.play()
+# Battle.play()
 
 # print([monster.id for monster in david.monsters])
 
-david.boards[0].monsters.append(nietzsche)
+david.boards[0].monster_effects.append(pstone)
+print(david.boards[0].monster_effects)

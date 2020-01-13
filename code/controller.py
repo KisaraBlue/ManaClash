@@ -68,7 +68,6 @@ class Controller():
         db.session.commit()
 
     def activate_monster(self, monster, board):
-        board.monsters.append(monster)
         BoardMonster.query.filter_by(monster_id=monster.id,
                                      board_id=board.id)\
                           .first()\
@@ -202,6 +201,8 @@ class Controller():
                     print("y = ", y)
                     if y == NUM_OF_MONSTERS:
                         enough_cards = False
+                        #    Go to MonsterEffect deck
+                        x = NUM_OF_MONSTERS
                         print("No more cards!")
                 print("Outside of inner loop")
 
@@ -221,8 +222,9 @@ class Controller():
                         user_board.monster_effects\
                                   .append(new_monster_effect)
                     y = y + 1
-
-            elif x in range(NUM_OF_MONSTERS + NUM_OF_MONSTER_EFFECTS,
+            else:
+                print(x, "Error!!!!! Random number not in range!!!!!")
+            """elif x in range(NUM_OF_MONSTERS + NUM_OF_MONSTER_EFFECTS,
                             NUM_OF_MONSTERS
                             + NUM_OF_MONSTER_EFFECTS
                             + NUM_OF_EQUIPMENT - 1):
@@ -236,11 +238,9 @@ class Controller():
                     if new_equipment is not None:
                         if new_equipment not in user_board.equipment:
                             new_card = True
-                        user_board.equipment\
+                        user_board.equipment
                                   .append(new_equipment)
-                    y = y + 1
-            else:
-                print(x, "Error!!!!! Random number not in range!!!!!")
+                    y = y + 1"""
         db.session.add(user_board)
         db.session.commit()
         return user_board

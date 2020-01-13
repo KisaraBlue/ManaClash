@@ -7,10 +7,13 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
 from flask_login import LoginManager
 
+from flask_restplus import Api
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = '60808326457a6384f78964761aaa161c'
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///site.db'
+
+api = Api(app)
 
 db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
@@ -27,7 +30,7 @@ login_manager.login_message_category = 'info'
 from manaclash import routes
 from manaclash.models import Monster, Type, Archetype, Equipment, MonsterEffect
 from manaclash.models import User, Game, Board
-from manaclash.models import BoardMonster, BoardMonsterEffect, BoardEquipment
+from manaclash.models import BoardMonster, BoardMonsterEffect
 from flask_admin import Admin
 from flask_admin.contrib.sqla import ModelView
 
@@ -47,4 +50,4 @@ admin.add_view(ModelView(Game, db.session))
 admin.add_view(ModelView(Board, db.session))
 admin.add_view(ModelView(BoardMonster, db.session))
 admin.add_view(ModelView(BoardMonsterEffect, db.session))
-admin.add_view(ModelView(BoardEquipment, db.session))
+# admin.add_view(ModelView(BoardEquipment, db.session))

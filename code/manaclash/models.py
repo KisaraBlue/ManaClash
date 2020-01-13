@@ -257,9 +257,9 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(60), nullable=False)
 
-    wins = db.Column(db.Integer, unique=False, nullable=True, default=0)
-    losses = db.Column(db.Integer, unique=False, nullable=True, default=0)
-    ties = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    win = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    loss = db.Column(db.Integer, unique=False, nullable=True, default=0)
+    tie = db.Column(db.Integer, unique=False, nullable=True, default=0)
 
     monsters = db.relationship("Monster",
                                secondary=deck_monster,
@@ -338,9 +338,9 @@ class Board(db.Model):
     # board_monsters = db.relationship("BoardMonster")
 
     monster_effects = association_proxy('board_monster_effects',
-                                        'board')
+                                        'monster_effect')
     equipment = association_proxy('board_equipment',
-                                  'board')
+                                  'equipment')
 
     def __init__(self, game_id, user_id, health=10):
         self.game_id = game_id
@@ -367,7 +367,6 @@ class BoardMonster(db.Model):
     board_id = db.Column(db.Integer,
                          db.ForeignKey('board.id'),
                          primary_key=True)
-    #   need to reference deck_monster.id, but can stay like this for now
     monster_id = db.Column(db.Integer,
                            db.ForeignKey('monster.id'),
                            primary_key=True)
@@ -394,11 +393,10 @@ class BoardMonsterEffect(db.Model):
     board_id = db.Column(db.Integer,
                          db.ForeignKey('board.id'),
                          primary_key=True)
-    #   need to reference deck_monster_effect.id, but can stay like this for now
     monster_effect_id = db.Column(db.Integer,
                                   db.ForeignKey('monster_effect.id'),
                                   primary_key=True)
-    state = db.Column(db.Enum(State), nullable=True, default=0)
+    state = db.Column(db.Enum(State), nullable=True, default=State.Hand)
 
     board = db.relationship(Board,
                             backref=db.backref("board_monster_effects",
@@ -406,18 +404,21 @@ class BoardMonsterEffect(db.Model):
 
     monster_effect = db.relationship("MonsterEffect")
 
-    def __init__(self, board, monster_effect, state=0):
+    def __init__(self, monster_effect, board=None, state=State.Hand):
         self.board = board
         self.monster_effect = monster_effect
         self.state = state
 
+    def __repr__(self):
+        return (f"Board: ID('{self.board.id}') "
+                f"Monster Effect: ID('{self.monster_effect.id}') ")
 
-class BoardEquipment(db.Model):
+
+"""class BoardEquipment(db.Model):
     __tablename__ = 'board_equipment'
     board_id = db.Column(db.Integer,
                          db.ForeignKey('board.id'),
                          primary_key=True)
-    #   need to reference deck_equipment.id, but can stay like this for now
     equipment_id = db.Column(db.Integer,
                              db.ForeignKey('equipment.id'),
                              primary_key=True)
@@ -434,8 +435,9 @@ class BoardEquipment(db.Model):
     equipment = db.relationship("Equipment")
     monster = db.relationship("Monster")
 
-    def __init__(self, board, monster, equipment, state=0):
+    def __init__(self, board, monster, equipment, state=State.Hand):
         self.board = board
         self.monster = monster
         self.equipment = equipment
         self.state = state
+"""
