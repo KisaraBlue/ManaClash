@@ -327,7 +327,7 @@ class ActivateMonster(Resource):
         BoardMonster.query.filter_by(monster_id=monster_id,
                                      board_id=board_id)\
                           .first()\
-                          .state = State.Active
+                          .state = State.Field
 
         db.session.add(board)
         db.session.commit()
@@ -352,7 +352,7 @@ class ActivateMonsterEffect(Resource):
         BoardMonsterEffect.query.filter_by(monster_effect_id=id,
                                            board_id=board_id)\
                           .first()\
-                          .state = State.Active
+                          .state = State.Field
 
         db.session.add(board)
         db.session.commit()
@@ -379,7 +379,7 @@ class EvaluateMonsterEffects(Resource):
         defense_bonus = 0
 
         for effect in board.monster_effects:
-            if effect.state is State.Active:
+            if effect.state is State.Field:
                 common_types = False
                 common_archetypes = 0
 
